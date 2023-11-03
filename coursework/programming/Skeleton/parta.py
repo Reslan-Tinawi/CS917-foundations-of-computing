@@ -1,11 +1,6 @@
 import csv
 from helpers import filter_data_by_date_range
 
-"""
-    Part A
-    Please provide definitions for the following functions
-"""
-
 
 # highest_price(data, start_date, end_date) -> float
 # data: the data from a csv file
@@ -23,8 +18,8 @@ def highest_price(data: list[dict[str, str]], start_date: str, end_date: str) ->
 # start_date: string in "dd/mm/yyyy" format
 def lowest_price(data: list[dict[str, str]], start_date: str, end_date: str) -> float:
     filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
-    lowset_value = min(map(lambda record: float(record.get("low")), filtered_data))
-    return lowset_value
+    lowest_value = min(map(lambda record: float(record.get("low")), filtered_data))
+    return lowest_value
 
 
 # max_volume(data, start_date, end_date) -> float
