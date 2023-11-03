@@ -14,8 +14,20 @@ def date_to_timestamp(input_date: str) -> int:
     return calendar.timegm(time.strptime(input_date, "%d/%m/%Y"))
 
 
+def timestamp_to_date(input_timestamp: int) -> str:
+    """_summary_
+
+    Args:
+        input_timestamp (int): _description_
+
+    Returns:
+        str: _description_
+    """
+    return time.strftime("%d/%m/%Y", time.gmtime(input_timestamp))
+
+
 def filter_data_by_date_range(
-    data: list[dict[str, str]], start_date: str, end_date: str, attribute_name: str
+    data: list[dict[str, str]], start_date: str, end_date: str, attribute_name: str = "time"
 ) -> list[dict[str, str]]:
     """This function filters the dataset to return only records
     that lies within a date range.
@@ -24,7 +36,7 @@ def filter_data_by_date_range(
         data (list[dict[str, str]]): The dataset. A list of dictionaries where each dictionary represents a row in the csv file
         start_date (str): start date of the filtering interval in "dd/mm/yyyy" format
         end_date (str): end date of the filtering interval in "dd/mm/yyyy" format
-        attribute_name (str): name of the date attribute in the dataset to use for filtering
+        attribute_name (str): name of the date attribute in the dataset to use for filtering. Defaults to "time".
 
     Returns:
         list[dict[str, str]]: filtered dataset that includes only records which fall in the filtering date interval
