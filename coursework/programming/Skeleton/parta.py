@@ -78,9 +78,7 @@ if __name__ == "__main__":
         ("01/12/2016", "31/12/2016"),
     ]
 
-    for i, sample_test in enumerate(test_data):
-        start_date, end_date = sample_test
-
+    for i, (start_date, end_date) in enumerate(test_data):
         print("####" * 20)
         print(f"Case {i}: start_date={start_date}, end_date={end_date}")
         print(f"highest_price: {highest_price(data, start_date, end_date)}")

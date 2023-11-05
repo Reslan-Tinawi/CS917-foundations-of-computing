@@ -1,3 +1,8 @@
+"""
+    Custom-defined exceptions for handling erros that may arise in calling the functions
+"""
+
+
 class ColumnNotFoundException(Exception):
     # Exception message set by value
     def __init__(self, value):

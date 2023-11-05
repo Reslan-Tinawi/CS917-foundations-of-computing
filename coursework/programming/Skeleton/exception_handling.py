@@ -1,3 +1,7 @@
+"""
+    Function for validating function arguments
+"""
+
 from constants import DATA_START_TIMESTAMP, DATA_END_TIMESTAMP
 from helpers import date_to_timestamp
 from exception_classes import (
@@ -25,23 +29,31 @@ def validate_columns(data: list[dict[str, str]], columns_to_check: list[str]) ->
 
 
 def is_in_range_date(input_date: str) -> bool:
+    """Validates that input date is within the data date range
+
+    Args:
+        input_date (str): input date to validate
+
+    Returns:
+        bool: True if the input date is within the data start and end dates. False otherwise
+    """
     return DATA_START_TIMESTAMP <= date_to_timestamp(input_date) <= DATA_END_TIMESTAMP
 
 
 def validate_input_arguments(data: list[dict[str, str]], start_date: str, end_date: str, columns_to_check: list[str]):
-    """_summary_
+    """This function validates the input arguments
 
     Args:
-        data (list[dict[str, str]]): _description_
-        start_date (str): _description_
-        end_date (str): _description_
-        columns_to_check (list[str]): _description_
+        data (list[dict[str, str]]): the dataset (list of records)
+        start_date (str): start date string
+        end_date (str): end date string
+        columns_to_check (list[str]): list of columns to check existence in the dataset
 
     Raises:
-        ColumnNotFoundException: _description_
-        InvalidDateTypeException: _description_
-        OutOfRangeDateException: _description_
-        InvalidDateRangeException: _description_
+        ColumnNotFoundException: if one of the columns in `columns_to_check` doesn't exist in the dataset
+        InvalidDateTypeException: if `start_date` or `end_date` are not of string type
+        OutOfRangeDateException: if `start_date` is small than the data "28/04/2015" or `end_date` is larger than "18/10/2020"
+        InvalidDateRangeException: if `end_date` is smaller than `start_date`
     """
     if not validate_columns(data, columns_to_check):
         raise ColumnNotFoundException("Error: requested column is missing from dataset")
