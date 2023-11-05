@@ -14,7 +14,7 @@ def date_to_timestamp(input_date: str) -> int:
     return calendar.timegm(time.strptime(input_date, "%d/%m/%Y"))
 
 
-def timestamp_to_date(input_timestamp: int) -> str:
+def timestamp_to_date(input_timestamp: int, format: str = "%d/%m/%Y") -> str:
     """_summary_
 
     Args:
@@ -23,7 +23,7 @@ def timestamp_to_date(input_timestamp: int) -> str:
     Returns:
         str: _description_
     """
-    return time.strftime("%d/%m/%Y", time.gmtime(input_timestamp))
+    return time.strftime(format, time.gmtime(input_timestamp))
 
 
 def filter_data_by_date_range(
