@@ -19,7 +19,7 @@ def highest_price(data: list[dict[str, str]], start_date: str, end_date: str) ->
         columns_to_check = ["time", "high"]
         validate_input_arguments(data, start_date, end_date, columns_to_check)
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+        filtered_data = filter_data_by_date_range(data, start_date, end_date)
         highest_value = max(map(lambda record: float(record.get("high")), filtered_data))
         return highest_value
     except (
@@ -41,7 +41,7 @@ def lowest_price(data, start_date, end_date):
         columns_to_check = ["time", "low"]
         validate_input_arguments(data, start_date, end_date, columns_to_check)
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+        filtered_data = filter_data_by_date_range(data, start_date, end_date)
         lowset_value = min(map(lambda record: float(record.get("low")), filtered_data))
         return lowset_value
     except (
@@ -63,7 +63,7 @@ def max_volume(data, start_date, end_date):
         columns_to_check = ["time", "volumefrom"]
         validate_input_arguments(data, start_date, end_date, columns_to_check)
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+        filtered_data = filter_data_by_date_range(data, start_date, end_date)
         max_exchanged_volume = max(map(lambda record: float(record.get("volumefrom")), filtered_data))
         return max_exchanged_volume
     except (
@@ -85,7 +85,7 @@ def best_avg_price(data, start_date, end_date):
         columns_to_check = ["time", "volumeto", "volumefrom"]
         validate_input_arguments(data, start_date, end_date, columns_to_check)
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+        filtered_data = filter_data_by_date_range(data, start_date, end_date)
         max_avg_price = max(map(lambda record: float(record["volumeto"]) / float(record["volumefrom"]), filtered_data))
         return max_avg_price
     except (
@@ -107,7 +107,7 @@ def moving_average(data, start_date, end_date):
         columns_to_check = ["time", "volumeto", "volumefrom"]
         validate_input_arguments(data, start_date, end_date, columns_to_check)
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+        filtered_data = filter_data_by_date_range(data, start_date, end_date)
         daily_averages = list(
             map(lambda record: float(record["volumeto"]) / float(record["volumefrom"]), filtered_data)
         )

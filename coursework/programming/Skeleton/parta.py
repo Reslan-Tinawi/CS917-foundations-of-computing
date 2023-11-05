@@ -7,7 +7,7 @@ from helpers import filter_data_by_date_range
 # start_date: string in "dd/mm/yyyy" format
 # start_date: string in "dd/mm/yyyy" format
 def highest_price(data: list[dict[str, str]], start_date: str, end_date: str) -> float:
-    filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+    filtered_data = filter_data_by_date_range(data, start_date, end_date)
     highest_price_val = max(map(lambda record: float(record.get("high")), filtered_data))
     return highest_price_val
 
@@ -17,7 +17,7 @@ def highest_price(data: list[dict[str, str]], start_date: str, end_date: str) ->
 # start_date: string in "dd/mm/yyyy" format
 # start_date: string in "dd/mm/yyyy" format
 def lowest_price(data: list[dict[str, str]], start_date: str, end_date: str) -> float:
-    filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+    filtered_data = filter_data_by_date_range(data, start_date, end_date)
     lowest_price_val = min(map(lambda record: float(record.get("low")), filtered_data))
     return lowest_price_val
 
@@ -27,7 +27,7 @@ def lowest_price(data: list[dict[str, str]], start_date: str, end_date: str) -> 
 # start_date: string in "dd/mm/yyyy" format
 # start_date: string in "dd/mm/yyyy" format
 def max_volume(data, start_date, end_date):
-    filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+    filtered_data = filter_data_by_date_range(data, start_date, end_date)
     max_exchanged_volume = max(map(lambda record: float(record.get("volumefrom")), filtered_data))
     return max_exchanged_volume
 
@@ -37,7 +37,7 @@ def max_volume(data, start_date, end_date):
 # start_date: string in "dd/mm/yyyy" format
 # start_date: string in "dd/mm/yyyy" format
 def best_avg_price(data, start_date, end_date) -> float:
-    filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+    filtered_data = filter_data_by_date_range(data, start_date, end_date)
     max_avg_price = max(map(lambda record: float(record["volumeto"]) / float(record["volumefrom"]), filtered_data))
     return max_avg_price
 
@@ -47,7 +47,7 @@ def best_avg_price(data, start_date, end_date) -> float:
 # start_date: string in "dd/mm/yyyy" format
 # start_date: string in "dd/mm/yyyy" format
 def moving_average(data, start_date, end_date) -> float:
-    filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+    filtered_data = filter_data_by_date_range(data, start_date, end_date)
     daily_averages = list(map(lambda record: float(record["volumeto"]) / float(record["volumefrom"]), filtered_data))
     moving_avg = sum(daily_averages) * 1.0 / len(daily_averages)
     return round(moving_avg, 2)
