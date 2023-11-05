@@ -1,6 +1,4 @@
 import csv
-import calendar
-import time
 from typing import Optional
 from exception_classes import (
     ColumnNotFoundException,
@@ -12,43 +10,8 @@ from linear_regression import (
     calculate_line_slope,
     calculate_line_y_intercept,
 )
-from constants import DATA_START_TIMESTAMP, DATA_END_TIMESTAMP, SECONDS_PER_DAY
-
-
-def date_to_timestamp(input_date: str) -> int:
-    return calendar.timegm(time.strptime(input_date, "%d/%m/%Y"))
-
-
-def filter_data_by_date_range(
-        data: list[dict[str, str]], start_date: str, end_date: str, attribute_name: str
-) -> list[dict[str, str]]:
-    try:
-        if isinstance(start_date, int) or isinstance(end_date, int):
-            raise InvalidDateTypeException("Error: invalid date value")
-
-        start_timestamp, end_timestamp = date_to_timestamp(start_date), date_to_timestamp(end_date)
-
-        if start_timestamp < DATA_START_TIMESTAMP or end_timestamp > DATA_END_TIMESTAMP:
-            raise OutOfRangeDateException(f"Error: date value is out of range")
-
-        if end_timestamp > start_timestamp:
-            raise InvalidDateRangeException("Error: end date must be larger than start date")
-
-    except OutOfRangeDateException as e:
-        print(str(e))
-
-    try:
-        if attribute_name not in data[0]:
-            raise ColumnNotFoundException(f"Column {attribute_name} doesn't exist in the data")
-
-        filtered_data = list(
-            filter(lambda record: start_timestamp <= int(record[attribute_name]) <= end_timestamp, data)
-        )
-
-    except ColumnNotFoundException as e:
-        print(str(e))
-
-    return filtered_data
+from constants import SECONDS_PER_DAY
+from helpers import filter_data_by_date_range, date_to_timestamp
 
 
 # Class Investment:
@@ -76,10 +39,10 @@ class Investment:
         self.end_date = end_date
 
     def highest_price(
-            self,
-            data: Optional[list[dict[str, str]]] = None,
-            start_date: Optional[str] = None,
-            end_date: Optional[str] = None,
+        self,
+        data: Optional[list[dict[str, str]]] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
     ) -> float:
         if data is None:
             data = self.data
@@ -88,7 +51,7 @@ class Investment:
         if end_date is None:
             end_date = self.end_date
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+        filtered_data = filter_data_by_date_range(data, start_date, end_date)
         highest_value_dict = max(filtered_data, key=lambda record: float(record["high"]))
         highest_value = float(highest_value_dict.get("high"))
         return highest_value
@@ -101,7 +64,7 @@ class Investment:
         if end_date is None:
             end_date = self.end_date
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+        filtered_data = filter_data_by_date_range(data, start_date, end_date)
         lowset_value_dict = min(filtered_data, key=lambda record: float(record["low"]))
         lowset_value = float(lowset_value_dict.get("low"))
         return float(lowset_value)
@@ -114,7 +77,7 @@ class Investment:
         if end_date is None:
             end_date = self.end_date
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+        filtered_data = filter_data_by_date_range(data, start_date, end_date)
         max_exchanged_volume_dict = max(filtered_data, key=lambda record: float(record["volumefrom"]))
         max_exchanged_volume = float(max_exchanged_volume_dict.get("volumefrom"))
         return float(max_exchanged_volume)
@@ -127,7 +90,7 @@ class Investment:
         if end_date is None:
             end_date = self.end_date
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+        filtered_data = filter_data_by_date_range(data, start_date, end_date)
         max_avg_price_dict = max(
             filtered_data, key=lambda record: float(record["volumeto"]) / float(record["volumefrom"])
         )
@@ -146,7 +109,7 @@ class Investment:
         if end_date is None:
             end_date = self.end_date
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
+        filtered_data = filter_data_by_date_range(data, start_date, end_date)
         daily_averages = list(
             map(lambda record: float(record["volumeto"]) / float(record["volumefrom"]), filtered_data)
         )
