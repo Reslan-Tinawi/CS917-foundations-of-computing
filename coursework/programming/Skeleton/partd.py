@@ -1,5 +1,6 @@
 import csv
 from typing import Optional
+import sys
 from exception_classes import (
     ColumnNotFoundException,
     InvalidDateTypeException,
@@ -11,7 +12,8 @@ from linear_regression import (
     calculate_line_y_intercept,
 )
 from constants import SECONDS_PER_DAY
-from helpers import filter_data_by_date_range, date_to_timestamp
+from helpers import filter_data_by_date_range
+from exception_handling import validate_input_arguments
 
 
 # Class Investment:
@@ -27,14 +29,7 @@ from helpers import filter_data_by_date_range, date_to_timestamp
 # 	moving_average(data, start_date, end_date) -> float
 class Investment:
     def __init__(self, data: list[dict[str, str]], start_date: str, end_date: str):
-        # self.data = data
-        # TODO:
-        #   is this appropriate here?
-        #   adding `volume_ratio` attributes
-        #   Also, why not convert `time` to integer here? NOOOOO
-        self.data = [
-            dict(record, volume_ratio=float(record["volumeto"]) / float(record["volumefrom"])) for record in data
-        ]
+        self.data = data
         self.start_date = start_date
         self.end_date = end_date
 
@@ -51,10 +46,21 @@ class Investment:
         if end_date is None:
             end_date = self.end_date
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date)
-        highest_value_dict = max(filtered_data, key=lambda record: float(record["high"]))
-        highest_value = float(highest_value_dict.get("high"))
-        return highest_value
+        try:
+            columns_to_check = ["time", "high"]
+            validate_input_arguments(data, start_date, end_date, columns_to_check)
+
+            filtered_data = filter_data_by_date_range(data, start_date, end_date)
+            highest_value = max(map(lambda record: float(record.get("high")), filtered_data))
+            return highest_value
+        except (
+            ColumnNotFoundException,
+            InvalidDateTypeException,
+            OutOfRangeDateException,
+            InvalidDateRangeException,
+        ) as ex:
+            print(ex.args)
+            sys.exit()
 
     def lowest_price(self, data: list[dict[str, str]] = None, start_date: str = None, end_date: str = None) -> float:
         if data is None:
@@ -64,10 +70,21 @@ class Investment:
         if end_date is None:
             end_date = self.end_date
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date)
-        lowset_value_dict = min(filtered_data, key=lambda record: float(record["low"]))
-        lowset_value = float(lowset_value_dict.get("low"))
-        return float(lowset_value)
+        try:
+            columns_to_check = ["time", "low"]
+            validate_input_arguments(data, start_date, end_date, columns_to_check)
+
+            filtered_data = filter_data_by_date_range(data, start_date, end_date)
+            lowset_value = min(map(lambda record: float(record.get("low")), filtered_data))
+            return lowset_value
+        except (
+            ColumnNotFoundException,
+            InvalidDateTypeException,
+            OutOfRangeDateException,
+            InvalidDateRangeException,
+        ) as ex:
+            print(ex.args)
+            sys.exit()
 
     def max_volume(self, data: list[dict[str, str]] = None, start_date: str = None, end_date: str = None) -> float:
         if data is None:
@@ -77,10 +94,21 @@ class Investment:
         if end_date is None:
             end_date = self.end_date
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date)
-        max_exchanged_volume_dict = max(filtered_data, key=lambda record: float(record["volumefrom"]))
-        max_exchanged_volume = float(max_exchanged_volume_dict.get("volumefrom"))
-        return float(max_exchanged_volume)
+        try:
+            columns_to_check = ["time", "volumefrom"]
+            validate_input_arguments(data, start_date, end_date, columns_to_check)
+
+            filtered_data = filter_data_by_date_range(data, start_date, end_date)
+            max_exchanged_volume = max(map(lambda record: float(record.get("volumefrom")), filtered_data))
+            return max_exchanged_volume
+        except (
+            ColumnNotFoundException,
+            InvalidDateTypeException,
+            OutOfRangeDateException,
+            InvalidDateRangeException,
+        ) as ex:
+            print(ex.args)
+            sys.exit()
 
     def best_avg_price(self, data: list[dict[str, str]] = None, start_date: str = None, end_date: str = None) -> float:
         if data is None:
@@ -90,16 +118,23 @@ class Investment:
         if end_date is None:
             end_date = self.end_date
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date)
-        max_avg_price_dict = max(
-            filtered_data, key=lambda record: float(record["volumeto"]) / float(record["volumefrom"])
-        )
+        try:
+            columns_to_check = ["time", "volumeto", "volumefrom"]
+            validate_input_arguments(data, start_date, end_date, columns_to_check)
 
-        max_volume_to = float(max_avg_price_dict.get("volumeto"))
-        max_volume_from = float(max_avg_price_dict.get("volumefrom"))
-        max_avg_price = max_volume_to / max_volume_from
-
-        return float(max_avg_price)
+            filtered_data = filter_data_by_date_range(data, start_date, end_date)
+            max_avg_price = max(
+                map(lambda record: float(record["volumeto"]) / float(record["volumefrom"]), filtered_data)
+            )
+            return max_avg_price
+        except (
+            ColumnNotFoundException,
+            InvalidDateTypeException,
+            OutOfRangeDateException,
+            InvalidDateRangeException,
+        ) as ex:
+            print(ex.args)
+            sys.exit()
 
     def moving_average(self, data: list[dict[str, str]] = None, start_date: str = None, end_date: str = None) -> float:
         if data is None:
@@ -109,22 +144,33 @@ class Investment:
         if end_date is None:
             end_date = self.end_date
 
-        filtered_data = filter_data_by_date_range(data, start_date, end_date)
-        daily_averages = list(
-            map(lambda record: float(record["volumeto"]) / float(record["volumefrom"]), filtered_data)
-        )
-        moving_avg = sum(daily_averages) * 1.0 / len(daily_averages)
-        return round(moving_avg, 2)
+        try:
+            columns_to_check = ["time", "volumeto", "volumefrom"]
+            validate_input_arguments(data, start_date, end_date, columns_to_check)
+
+            filtered_data = filter_data_by_date_range(data, start_date, end_date)
+            daily_averages = list(
+                map(lambda record: float(record["volumeto"]) / float(record["volumefrom"]), filtered_data)
+            )
+            moving_avg = sum(daily_averages) * 1.0 / len(daily_averages)
+            return round(moving_avg, 2)
+        except (
+            ColumnNotFoundException,
+            InvalidDateTypeException,
+            OutOfRangeDateException,
+            InvalidDateRangeException,
+        ) as ex:
+            print(ex.args)
+            sys.exit()
 
 
 # predict_next_average(investment) -> float
 # investment: Investment type
 def predict_next_average(investment: Investment) -> float:
     # filter data by start_date and end_date intervals
-    # TODO:
-    #   convert start_date and end_date from date to timestamp
-    start_timestamp, end_timestamp = date_to_timestamp(investment.start_date), date_to_timestamp(investment.end_date)
-    data = list(filter(lambda x: start_timestamp <= int(x.get("time")) <= end_timestamp, investment.data))
+    # start_timestamp, end_timestamp = date_to_timestamp(investment.start_date), date_to_timestamp(investment.end_date)
+    # data = list(filter(lambda x: start_timestamp <= int(x.get("time")) <= end_timestamp, investment.data))
+    data = filter_data_by_date_range(investment.data, investment.start_date, investment.end_date)
 
     # building x and y vectors
     x_list = list(map(lambda record: float(record.get("time")), data))
@@ -145,24 +191,23 @@ def predict_next_average(investment: Investment) -> float:
 # investment: Investment type
 def classify_trend(investment: Investment) -> str:
     # filter data by start_date and end_date intervals
-    # TODO:
-    #   convert start_date and end_date from date to timestamp
-    start_timestamp, end_timestamp = date_to_timestamp(investment.start_date), date_to_timestamp(investment.end_date)
-    data = list(filter(lambda x: start_timestamp <= int(x.get("time")) <= end_timestamp, investment.data))
+    # start_timestamp, end_timestamp = date_to_timestamp(investment.start_date), date_to_timestamp(investment.end_date)
+    # data = list(filter(lambda record: start_timestamp <= int(record.get("time")) <= end_timestamp, investment.data))
+    data = filter_data_by_date_range(investment.data, investment.start_date, investment.end_date)
 
     # building x and y vectors
     x_list = list(map(lambda record: float(record.get("time")), data))
-    low_y_list = list(map(lambda record: record.get("high"), data))
-    high_y_list = list(map(lambda record: record.get("low"), data))
+    low_y_list = list(map(lambda record: float(record.get("high")), data))
+    high_y_list = list(map(lambda record: float(record.get("low")), data))
 
     daily_low_slope = calculate_line_slope(x_list, low_y_list)
     daily_high_slope = calculate_line_slope(x_list, high_y_list)
 
-    if daily_high_slope > 0 & daily_low_slope < 0:  # daily_high increasing, daily_low decreasing
+    if daily_high_slope > 0 and daily_low_slope < 0:  # daily_high increasing, daily_low decreasing
         return "volatile"
-    if daily_high_slope > 0 & daily_low_slope > 0:  # daily_high increasing, daily_low increasing
+    if daily_high_slope > 0 and daily_low_slope > 0:  # daily_high increasing, daily_low increasing
         return "increasing"
-    if daily_high_slope < 0 & daily_low_slope < 0:  # daily_high decreasing, daily_low decreasing
+    if daily_high_slope < 0 and daily_low_slope < 0:  # daily_high decreasing, daily_low decreasing
         return "decreasing"
     return "other"
 
@@ -176,6 +221,38 @@ if __name__ == "__main__":
         with open(dataset_file_path, "r") as f:
             reader = csv.DictReader(f)
             data = [r for r in reader]
+
+        test_data = [
+            ("01/01/2016", "31/01/2016"),
+            ("01/02/2016", "28/02/2016"),
+            ("01/12/2016", "31/12/2016"),
+        ]
+
+        for i, (start_date, end_date) in enumerate(test_data):
+            investment = Investment(data, start_date, end_date)
+
+            print("####" * 20)
+            print(f"Case {i}: start_date={start_date}, end_date={end_date}")
+            print(f"highest_price: {investment.highest_price()}")
+            print(f"lowest_price: {investment.lowest_price()}")
+            print(f"max_volume: {investment.max_volume()}")
+            print(f"best_avg_price: {investment.best_avg_price()}")
+            print(f"moving_average: {investment.moving_average()}")
+            print("####" * 20)
+
+        test_data = [
+            ("04/05/2015", "27/05/2015"),  # 237.72045957687828 other
+            ("01/02/2016", "28/02/2016"),  # 441.4238016565723 increasing
+            ("08/12/2016", "11/12/2016"),  # 778.1930137752934 increasing
+        ]
+
+        for i, (start_date, end_date) in enumerate(test_data):
+            investment = Investment(data, start_date, end_date)
+            print("####" * 20)
+            print(f"Case {i}: start_date={start_date}, end_date={end_date}")
+            print(f"Next average: {predict_next_average(investment)}")
+            print(f"Trend: {classify_trend(investment)}")
+            print("####" * 20)
 
     except Exception as ex:
         ex_type = type(ex).__name__
