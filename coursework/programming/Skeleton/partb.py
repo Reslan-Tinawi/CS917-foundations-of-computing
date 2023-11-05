@@ -7,7 +7,7 @@ from exception_classes import (
     InvalidDateRangeException,
 )
 from helpers import filter_data_by_date_range, date_to_timestamp
-from constants import DATA_START_DATE, DATA_END_DATE
+from constants import DATA_START_TIMESTAMP, DATA_END_TIMESTAMP
 
 
 def validate_columns(data: list[dict[str, str]], columns_to_check: list[str]) -> bool:
@@ -27,7 +27,7 @@ def validate_columns(data: list[dict[str, str]], columns_to_check: list[str]) ->
 
 
 def is_in_range_date(input_date: str) -> bool:
-    return DATA_START_DATE <= date_to_timestamp(input_date) <= DATA_END_DATE
+    return DATA_START_TIMESTAMP <= date_to_timestamp(input_date) <= DATA_END_TIMESTAMP
 
 
 def validate_input_arguments(data: list[dict[str, str]], start_date: str, end_date: str, columns_to_check: list[str]):
@@ -46,7 +46,7 @@ def validate_input_arguments(data: list[dict[str, str]], start_date: str, end_da
         InvalidDateRangeException: _description_
     """
     if not validate_columns(data, columns_to_check):
-        raise ColumnNotFoundException("Error: requested column is missing from datase")
+        raise ColumnNotFoundException("Error: requested column is missing from dataset")
 
     if isinstance(start_date, int) or isinstance(end_date, int):
         raise InvalidDateTypeException("Error: invalid date value")
@@ -56,7 +56,7 @@ def validate_input_arguments(data: list[dict[str, str]], start_date: str, end_da
 
     start_timestamp, end_timestamp = date_to_timestamp(start_date), date_to_timestamp(end_date)
 
-    if end_timestamp > start_timestamp:
+    if end_timestamp < start_timestamp:
         raise InvalidDateRangeException("Error: end date must be larger than start date")
 
 
@@ -73,10 +73,10 @@ def highest_price(data: list[dict[str, str]], start_date: str, end_date: str) ->
         highest_value = max(map(lambda record: float(record.get("high")), filtered_data))
         return highest_value
     except (
-            ColumnNotFoundException,
-            InvalidDateTypeException,
-            OutOfRangeDateException,
-            InvalidDateRangeException,
+        ColumnNotFoundException,
+        InvalidDateTypeException,
+        OutOfRangeDateException,
+        InvalidDateRangeException,
     ) as ex:
         print(ex.args)
         sys.exit()
@@ -95,10 +95,10 @@ def lowest_price(data, start_date, end_date):
         lowset_value = min(map(lambda record: float(record.get("low")), filtered_data))
         return lowset_value
     except (
-            ColumnNotFoundException,
-            InvalidDateTypeException,
-            OutOfRangeDateException,
-            InvalidDateRangeException,
+        ColumnNotFoundException,
+        InvalidDateTypeException,
+        OutOfRangeDateException,
+        InvalidDateRangeException,
     ) as ex:
         print(ex.args)
         sys.exit()
@@ -117,10 +117,10 @@ def max_volume(data, start_date, end_date):
         max_exchanged_volume = max(map(lambda record: float(record.get("volumefrom")), filtered_data))
         return max_exchanged_volume
     except (
-            ColumnNotFoundException,
-            InvalidDateTypeException,
-            OutOfRangeDateException,
-            InvalidDateRangeException,
+        ColumnNotFoundException,
+        InvalidDateTypeException,
+        OutOfRangeDateException,
+        InvalidDateRangeException,
     ) as ex:
         print(ex.args)
         sys.exit()
@@ -139,10 +139,10 @@ def best_avg_price(data, start_date, end_date):
         max_avg_price = max(map(lambda record: float(record["volumeto"]) / float(record["volumefrom"]), filtered_data))
         return max_avg_price
     except (
-            ColumnNotFoundException,
-            InvalidDateTypeException,
-            OutOfRangeDateException,
-            InvalidDateRangeException,
+        ColumnNotFoundException,
+        InvalidDateTypeException,
+        OutOfRangeDateException,
+        InvalidDateRangeException,
     ) as ex:
         print(ex.args)
         sys.exit()
@@ -164,22 +164,16 @@ def moving_average(data, start_date, end_date):
         moving_avg = sum(daily_averages) * 1.0 / len(daily_averages)
         return round(moving_avg, 2)
     except (
-            ColumnNotFoundException,
-            InvalidDateTypeException,
-            OutOfRangeDateException,
-            InvalidDateRangeException,
+        ColumnNotFoundException,
+        InvalidDateTypeException,
+        OutOfRangeDateException,
+        InvalidDateRangeException,
     ) as ex:
         print(ex.args)
         sys.exit()
 
 
-# Replace the body of this main function for your testing purposes
 if __name__ == "__main__":
-    # Start the program
-
-    # Example variable initialization
-    # data is always the cryptocompare_btc.csv read in using a DictReader
-
     data = []
     dataset_file_path = "cryptocompare_btc.csv"
 
