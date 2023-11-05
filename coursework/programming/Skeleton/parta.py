@@ -8,8 +8,8 @@ from helpers import filter_data_by_date_range
 # start_date: string in "dd/mm/yyyy" format
 def highest_price(data: list[dict[str, str]], start_date: str, end_date: str) -> float:
     filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
-    highest_value = max(map(lambda record: float(record.get("high")), filtered_data))
-    return highest_value
+    highest_price_val = max(map(lambda record: float(record.get("high")), filtered_data))
+    return highest_price_val
 
 
 # lowest_price(data, start_date, end_date) -> float
@@ -18,8 +18,8 @@ def highest_price(data: list[dict[str, str]], start_date: str, end_date: str) ->
 # start_date: string in "dd/mm/yyyy" format
 def lowest_price(data: list[dict[str, str]], start_date: str, end_date: str) -> float:
     filtered_data = filter_data_by_date_range(data, start_date, end_date, "time")
-    lowest_value = min(map(lambda record: float(record.get("low")), filtered_data))
-    return lowest_value
+    lowest_price_val = min(map(lambda record: float(record.get("low")), filtered_data))
+    return lowest_price_val
 
 
 # max_volume(data, start_date, end_date) -> float
