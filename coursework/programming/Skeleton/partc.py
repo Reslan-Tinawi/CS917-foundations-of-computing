@@ -1,37 +1,6 @@
 import csv
-from helpers import filter_data_by_date_range, timestamp_to_date
+from helpers import filter_data_by_date_range, timestamp_to_date, calculate_window_moving_average
 from constants import SHORT_WINDOW_SIZE, LONG_WINDOW_SIZE
-
-
-def get_record_index(data: dict[str, str], value) -> int:
-    element_position = [index for index, record in enumerate(data) if int(record.get("time")) == value]
-    if len(element_position) == 0:
-        return -1
-    return element_position[0]
-
-
-def calculate_window_moving_average(data: list[dict[str, str]], dt: int, window_size: int) -> float:
-    """_summary_
-
-    Args:
-        data (list[dict[str, str]]): _description_
-        dt (int): _description_
-        window_size (int): _description_
-
-    Returns:
-        float: _description_
-    """
-    # calculate window start and end indices
-    end_idx = get_record_index(data, dt) + 1
-    start_idx = max(0, end_idx - window_size)
-
-    # extract list of the daily average prices (volumeto / volumefrom) for the corresponding dates
-    daily_avg_price_list = list(
-        map(lambda record: float(record["volumeto"]) / float(record["volumefrom"]), data[start_idx:end_idx])
-    )
-
-    # return the window average
-    return sum(daily_avg_price_list) * 1.0 / len(daily_avg_price_list)
 
 
 # moving_avg_short(data, start_date, end_date) -> dict
@@ -44,6 +13,7 @@ def moving_avg_short(data: list[dict[str, str]], start_date: str, end_date: str)
         map(lambda record: int(record.get("time")), filter_data_by_date_range(data, start_date, end_date))
     )
 
+    # store the moving average value for each date
     short_moving_avg_dict = {
         timestamp_to_date(dt): calculate_window_moving_average(data, dt, SHORT_WINDOW_SIZE) for dt in dates_list
     }
@@ -61,6 +31,7 @@ def moving_avg_long(data: list[dict[str, str]], start_date: str, end_date: str) 
         map(lambda record: int(record.get("time")), filter_data_by_date_range(data, start_date, end_date))
     )
 
+    # store the moving average value for each date
     long_moving_avg_dict = {
         timestamp_to_date(dt): calculate_window_moving_average(data, dt, LONG_WINDOW_SIZE) for dt in dates_list
     }
@@ -153,6 +124,7 @@ if __name__ == "__main__":
         ("01/05/2017", "12/06/2017"),
         ("05/09/2018", "27/09/2018"),
         ("03/11/2019", "14/11/2019"),
+        ("28/04/2015", "28/05/2015"),
     ]
 
     for i, (start_date, end_date) in enumerate(test_data):
