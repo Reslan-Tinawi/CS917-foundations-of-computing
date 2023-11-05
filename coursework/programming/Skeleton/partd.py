@@ -197,8 +197,8 @@ def classify_trend(investment: Investment) -> str:
 
     # building x and y vectors
     x_list = list(map(lambda record: float(record.get("time")), data))
-    low_y_list = list(map(lambda record: float(record.get("high")), data))
-    high_y_list = list(map(lambda record: float(record.get("low")), data))
+    low_y_list = list(map(lambda record: float(record.get("low")), data))
+    high_y_list = list(map(lambda record: float(record.get("high")), data))
 
     daily_low_slope = calculate_line_slope(x_list, low_y_list)
     daily_high_slope = calculate_line_slope(x_list, high_y_list)
